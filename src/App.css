@@ -1,0 +1,59 @@
+.App {
+  background-color: white;
+}
+
+.auth-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  padding: 50px;
+}
+
+.files-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+}
+
+.auth-form {
+  width: 420px;
+  box-shadow: rgb(0 0 0 / 16%) 1px 1px 10px;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.auth-form-content {
+  padding-left: 12%;
+  padding-right: 12%;
+}
+
+.files-table {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.files-table th {
+  border-bottom: 1px solid gray;
+  padding: 10px;
+}
+
+.files-table td {
+  border: 0;
+  border-bottom: 1px solid gray;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(34, 34, 34);
+}
