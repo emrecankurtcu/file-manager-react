@@ -7,62 +7,31 @@ import authService from '../services/auth.service';
 
 function Home() {
     const [files, setFiles] = useState([]);
-    const [firstName, setFirstName] = useState([]);
-    const [lastName, setLastName] = useState([]);
-    const [file, setFile] = useState([]);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [file, setFile] = useState(null);
     const navigate = useNavigate();
+
+
+    const getAllFilesInformations = async () => {
+      fileService.getAllFilesInformations().then(
+        (response) => {
+          console.log(response);
+          setFiles(response.data);
+        },
+        (error) => {
+          console.log(error.response.data.message);
+        }
+      );
+    }
+
+
     useEffect(() => {
         const user = authService.getCurrentUser();
         if(user){
           setFirstName(user.firstName);
           setLastName(user.lastName);
-          // fileService.getAllFilesInformations().then(
-          //       (response) => {
-          //         console.log(response);
-          //         setFiles(response.data);
-          //       },
-          //       (error) => {
-          //         console.log(error);
-          //       }
-          //     );
-          setFiles([
-            {
-                "fileInformationId": 1,
-                "path": "uploads\\files\\3yf761logrh736zdhvlaht0ydbnxk1j7nmkf06048cy40c5n3es5k2xy8dmd43xn\\TEST.pdf",
-                "size": 28894,
-                "name": "TEST.pdf",
-                "extension": "pdf"
-            },
-            {
-                "fileInformationId": 2,
-                "path": "uploads\\files\\3yf761logrh736zdhvlaht0ydbnxk1j7nmkf06048cy40c5n3es5k2xy8dmd43xn\\TEST.pdf",
-                "size": 28894,
-                "name": "TEST.pdf",
-                "extension": "pdf"
-            },
-            {
-                "fileInformationId": 3,
-                "path": "uploads\\files\\3yf761logrh736zdhvlaht0ydbnxk1j7nmkf06048cy40c5n3es5k2xy8dmd43xn\\TEST.pdf",
-                "size": 28894,
-                "name": "TEST.pdf",
-                "extension": "pdf"
-            },
-            {
-                "fileInformationId": 4,
-                "path": "uploads\\files\\3yf761logrh736zdhvlaht0ydbnxk1j7nmkf06048cy40c5n3es5k2xy8dmd43xn\\TEST.pdf",
-                "size": 28894,
-                "name": "TEST.pdf",
-                "extension": "pdf"
-            },
-            {
-                "fileInformationId": 5,
-                "path": "uploads\\files\\3yf761logrh736zdhvlaht0ydbnxk1j7nmkf06048cy40c5n3es5k2xy8dmd43xn\\TEST.pdf",
-                "size": 28894,
-                "name": "TEST.pdf",
-                "extension": "pdf"
-            }
-        ]);
-            
+          getAllFilesInformations();
         }
         else{
             navigate("/login");
@@ -81,14 +50,26 @@ function Home() {
 
     const uploadFile = async (e) => {
       e.preventDefault();
+      const formData = new FormData();
+      formData.append("file", file);
       try {
-        await fileService.uploadFile(file).then(
-          () => {
-            navigate("/home");
+        await fileService.uploadFile(formData).then(
+          (response) => {
+            if(response.status == 200){
+              setFile(null);
+              getAllFilesInformations();
+            }
+            else if(response.status == 401){
+                authService.logout();
+                navigate("/login");
+            }
+            else if(response.status == 400){
+              console.log(response.data.message);
+              alert(response.data.message);
+            }
           },
           (error) => {
-            console.log(error.message)
-            alert(error.message);
+            console.log(error);
           }
         );
       } catch (err) {
@@ -100,11 +81,22 @@ function Home() {
       try {
         await fileService.getFile(fileInformationId).then(
           (response) => {
-            console.log(response);
+            if(response.status == 200){
+              const fileURL = URL.createObjectURL(response);
+              window.open(fileURL);
+            }
+            else if(response.status == 401){
+                authService.logout();
+                navigate("/login");
+            }
+            else if(response.status == 400){
+              console.log(response.data.message);
+              alert(response.data.message);
+              getAllFilesInformations();
+            }
           },
           (error) => {
-            console.log(error.message)
-            alert(error.message);
+            console.log(error);
           }
         );
       } catch (err) {
@@ -115,12 +107,22 @@ function Home() {
     const handleDeleteFile = async (fileInformationId) => {
       try {
         await fileService.deleteFile(fileInformationId).then(
-          () => {
-            navigate("/home");
+          (response) => {
+            if(response.status == 200){
+              getAllFilesInformations();
+            }
+            else if(response.status == 401){
+                authService.logout();
+                navigate("/login");
+            }
+            else if(response.status == 400){
+              console.log(response.data.message);
+              alert(response.data.message);
+              getAllFilesInformations();
+            }
           },
           (error) => {
-            console.log(error.message)
-            alert(error.message);
+            console.log(error);
           }
         );
       } catch (err) {
@@ -151,8 +153,8 @@ function Home() {
       </div>
       <div className="container mt-5">
         <form onSubmit={uploadFile}>
-          <input type="file" onChange={(e) => setFile(e.target.value)}/>
-          { file.length > 0 &&
+          <input type="file" onChange={(e) => setFile(e.target.files[0])}/>
+          { file &&
           <button type="submit" className="btn btn-secondary">Upload</button>
           }
         </form>

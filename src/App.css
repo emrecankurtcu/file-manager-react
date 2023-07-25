@@ -41,6 +41,7 @@
 .files-table th {
   border-bottom: 1px solid gray;
   padding: 10px;
+  width: 350px;
 }
 
 .files-table td {
