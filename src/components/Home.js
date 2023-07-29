@@ -82,7 +82,7 @@ function Home() {
         await fileService.getFile(fileInformationId).then(
           (response) => {
             if(response.status == 200){
-              const fileURL = URL.createObjectURL(response);
+              const fileURL = URL.createObjectURL(new Blob([response.data], {type: response.headers["content-type"].split(";")[0]}));
               window.open(fileURL);
             }
             else if(response.status == 401){

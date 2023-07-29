@@ -16,10 +16,7 @@ const getAllFilesInformations = () => {
 }
 
 const getFile = (fileInformationId) => {
-    return axios.get(GET_FILE_URL+fileInformationId,{headers : authHeader(),responseType:"arraybuffer"}).then((response) =>  {
-        return new Blob([response.data], {type: response.headers["content-type"].split(";")[0]});
-    })
-    .catch((error) =>  error.response);
+    return axios.get(GET_FILE_URL+fileInformationId,{headers : authHeader(),responseType:"arraybuffer"}).then((response) =>  response).catch((error) =>  error.response);
 }
 
 const deleteFile = (fileInformationId) => {
